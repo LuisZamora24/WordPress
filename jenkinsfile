@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+    stages {
+        stage('Copiar repositorio') {
+            steps {
+                echo 'Inicializando los datos'
+                git branch: 'main', url: 'https://github.com/LuisZamora24/WordPress.git'
+            }
+        }
+        
+        stage('Limpiando versiones anteriores') {
+            steps {
+                echo 'Bajando versiones antiguas del entorno (Solo si existen)'
+                sh 'docker compose down --volumes --remove-orphans'
+            }
+        }
+        
+        stage('Construir Servicio') {
+            steps {
+                echo 'Levantando contenedores'
+                sh 'docker compose up -d'
+            }
+        }
+        
+        stage('Verificar contenedores creados') {
+            steps {
+                echo 'Estado actual de los nuevos contenedores:'
+                sh 'docker ps'
+            }
+        }     
+        
+        stage('Verificar la red') {
+            steps {
+                echo 'Estado actual de red de los nuevos contenedores:'
+                sh 'docker network ls'
+            }
+        }    
+        
+        stage('Verificar volumenes') {
+            steps {
+                echo 'Listado de volumenes:'
+                sh 'docker volume ls'
+            }
+        }
+    }
+}
