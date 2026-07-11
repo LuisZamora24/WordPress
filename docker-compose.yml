@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: db
+    restart: always
+    ports:
+      - "3306:3306"
+    env_file:
+      - config.env
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - red_wordpress
+
+  wordpress:
+    image: wordpress:latest
+    container_name: wordpress
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "8082:80"
+    env_file:
+      - config.env
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - red_wordpress
+
+volumes:
+  db-data:
+  wordpress_data:
+
+networks:
+  red_wordpress:
+    driver: bridge
